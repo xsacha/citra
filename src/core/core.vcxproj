@@ -164,6 +164,7 @@
     <ClCompile Include="core_timing.cpp" />
     <ClCompile Include="elf\elf_reader.cpp" />
     <ClCompile Include="file_sys\blob.cpp" />
+    <ClCompile Include="file_sys\file_sys_ctr.cpp" />
     <ClCompile Include="hle\config_mem.cpp" />
     <ClCompile Include="hle\coprocessor.cpp" />
     <ClCompile Include="hle\hle.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="elf\elf_types.h" />
     <ClInclude Include="file_sys\blob.h" />
     <ClInclude Include="file_sys\file_sys.h" />
+    <ClInclude Include="file_sys\file_sys_ctr.h" />
     <ClInclude Include="file_sys\volume.h" />
     <ClInclude Include="hle\config_mem.h" />
     <ClInclude Include="hle\coprocessor.h" />

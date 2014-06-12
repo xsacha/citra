@@ -29,6 +29,7 @@ set(SRCS    core.cpp
             arm/interpreter/mmu/xscale_copro.cpp
             elf/elf_reader.cpp
             file_sys/blob.cpp
+            file_sys/file_sys_ctr.cpp
             hle/hle.cpp
             hle/config_mem.cpp
             hle/coprocessor.cpp
@@ -75,6 +76,8 @@ set(HEADERS core.h
             elf/elf_types.h
             file_sys/blob.h
             file_sys/file_sys.h
+            file_sys/file_sys_ctr.h
+            file_sys/volume.h
             hle/config_mem.h
             hle/coprocessor.h
             hle/hle.h
