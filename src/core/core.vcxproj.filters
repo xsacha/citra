@@ -313,6 +313,9 @@
     <ClInclude Include="file_sys\blob.h">
       <Filter>file_sys</Filter>
     </ClInclude>
+    <ClInclude Include="file_sys\volume.h">
+      <Filter>file_sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />

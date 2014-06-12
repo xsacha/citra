@@ -213,7 +213,7 @@
     <ClInclude Include="elf\elf_types.h" />
     <ClInclude Include="file_sys\blob.h" />
     <ClInclude Include="file_sys\file_sys.h" />
-    <ClInclude Include="file_sys\meta_file_system.h" />
+    <ClInclude Include="file_sys\volume.h" />
     <ClInclude Include="hle\config_mem.h" />
     <ClInclude Include="hle\coprocessor.h" />
     <ClInclude Include="hle\function_wrappers.h" />
