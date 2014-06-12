@@ -1,138 +1,52 @@
-// Copyright (c) 2012- PPSSPP Project.
-
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, version 2.0 or later versions.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License 2.0 for more details.
-
-// A copy of the GPL 2.0 should have been included with the program.
-// If not, see http://www.gnu.org/licenses/
-
-// Official git repository and contact information can be found at
-// https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
+// Copyright 2014 Dolphin Emulator Project / Citra Emulator Project
+// Licensed under GPLv2
+// Refer to the license.txt file included.
 
 #pragma once
 
+#include <cstddef>
+#include <cstring>
+#include <string>
+#include <vector>
+
 #include "common/common.h"
-#include "common/chunk_file.h"
 
-enum FileAccess {
-	FILEACCESS_NONE=0,
-	FILEACCESS_READ=1,
-	FILEACCESS_WRITE=2,
-	FILEACCESS_APPEND=4,
-	FILEACCESS_CREATE=8
-};
+namespace FileSys {
 
-enum FileMove {
-	FILEMOVE_BEGIN=0,
-	FILEMOVE_CURRENT=1,
-	FILEMOVE_END=2
-};
+class Volume;
 
-enum FileType {
-	FILETYPE_NORMAL=1,
-	FILETYPE_DIRECTORY=2
-};
-
-
-class IHandleAllocator {
-public:
-	virtual ~IHandleAllocator() {}
-	virtual u32 GetNewHandle() = 0;
-	virtual void FreeHandle(u32 handle) = 0;
-};
-
-class SequentialHandleAllocator : public IHandleAllocator {
-public:
-	SequentialHandleAllocator() : handle_(1) {}
-	virtual u32 GetNewHandle() { return handle_++; }
-	virtual void FreeHandle(u32 handle) {}
-private:
-	int handle_;
-};
-
+// File info of an FST entry
 struct FileInfo {
-	FileInfo() 
-		: size(0), access(0), exists(false), type(FILETYPE_NORMAL), isOnSectorSystem(false), startSector(0), numSectors(0) {}
+    u64 name_offset;
+    u64 offset;
+    u64 size;
+    std::string full_path;
 
-	void DoState(PointerWrap &p) {
-		auto s = p.Section("FileInfo", 1);
-		if (!s)
-			return;
+    bool IsDirectory() const { return (name_offset & 0xFF000000) != 0; }
 
-		p.Do(name);
-		p.Do(size);
-		p.Do(access);
-		p.Do(exists);
-		p.Do(type);
-		p.Do(atime);
-		p.Do(ctime);
-		p.Do(mtime);
-		p.Do(isOnSectorSystem);
-		p.Do(startSector);
-		p.Do(numSectors);
-		p.Do(sectorSize);
-	}
+    FileInfo() : name_offset(0), offset(0), size(0) { }
 
-	std::string name;
-	s64 size;
-	u32 access; //unix 777
-	bool exists;
-	FileType type;
-
-	tm atime;
-	tm ctime;
-	tm mtime;
-
-	bool isOnSectorSystem;
-	u32 startSector;
-	u32 numSectors;
-	u32 sectorSize;
+    FileInfo(const FileInfo& rhs) : name_offset(rhs.name_offset),
+        offset(rhs.offset), size(rhs.size), full_path(rhs.full_path) { }
 };
 
-
-class IFileSystem {
+class FileSystem : NonCopyable {
 public:
-	virtual ~IFileSystem() {}
+    FileSystem(const Volume* volume);
 
-	virtual void DoState(PointerWrap &p) = 0;
-	virtual std::vector<FileInfo> GetDirListing(std::string path) = 0;
-	virtual u32      OpenFile(std::string filename, FileAccess access, const char *devicename=NULL) = 0;
-	virtual void     CloseFile(u32 handle) = 0;
-	virtual size_t   ReadFile(u32 handle, u8 *pointer, s64 size) = 0;
-	virtual size_t   WriteFile(u32 handle, const u8 *pointer, s64 size) = 0;
-	virtual size_t   SeekFile(u32 handle, s32 position, FileMove type) = 0;
-	virtual FileInfo GetFileInfo(std::string filename) = 0;
-	virtual bool     OwnsHandle(u32 handle) = 0;
-	virtual bool     MkDir(const std::string &dirname) = 0;
-	virtual bool     RmDir(const std::string &dirname) = 0;
-	virtual int      RenameFile(const std::string &from, const std::string &to) = 0;
-	virtual bool     RemoveFile(const std::string &filename) = 0;
-	virtual bool     GetHostPath(const std::string &inpath, std::string &outpath) = 0;
+    virtual ~FileSystem();
+    virtual bool IsValid() const = 0;
+    virtual size_t GetFileList(std::vector<const FileInfo *>& filenames) = 0;
+    virtual u64 GetFileSize(const std::string& full_path) = 0;
+    virtual u64 ReadFile(const std::string& full_path, u8* buffer, size_t max_buffer_size) = 0;
+
+    virtual const Volume* GetVolume() const { return volume; }
+
+protected:
+    const Volume* volume;
+
 };
 
+FileSystem* CreateFileSystem(const Volume *_rVolume);
 
-class EmptyFileSystem : public IFileSystem {
-public:
-	virtual void DoState(PointerWrap &p) {}
-	std::vector<FileInfo> GetDirListing(std::string path) {std::vector<FileInfo> vec; return vec;}
-	u32      OpenFile(std::string filename, FileAccess access, const char *devicename=NULL) {return 0;}
-	void     CloseFile(u32 handle) {}
-	size_t   ReadFile(u32 handle, u8 *pointer, s64 size) {return 0;}
-	size_t   WriteFile(u32 handle, const u8 *pointer, s64 size) {return 0;}
-	size_t   SeekFile(u32 handle, s32 position, FileMove type) {return 0;}
-	FileInfo GetFileInfo(std::string filename) {FileInfo f; return f;}
-	bool     OwnsHandle(u32 handle) {return false;}
-	virtual bool MkDir(const std::string &dirname) {return false;}
-	virtual bool RmDir(const std::string &dirname) {return false;}
-	virtual int RenameFile(const std::string &from, const std::string &to) {return -1;}
-	virtual bool RemoveFile(const std::string &filename) {return false;}
-	virtual bool GetHostPath(const std::string &inpath, std::string &outpath) {return false;}
-};
-
-
+} // namespace FileSys
