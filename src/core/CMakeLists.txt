@@ -29,6 +29,7 @@ set(SRCS    core.cpp
             arm/interpreter/mmu/xscale_copro.cpp
             elf/elf_reader.cpp
             file_sys/blob.cpp
+            file_sys/file_sys.cpp
             file_sys/file_sys_ctr.cpp
             hle/hle.cpp
             hle/config_mem.cpp
