@@ -180,6 +180,9 @@
     <ClCompile Include="file_sys\file_sys.cpp">
       <Filter>file_sys</Filter>
     </ClCompile>
+    <ClCompile Include="file_sys\volume_exefs.cpp">
+      <Filter>file_sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arm\disassembler\arm_disasm.h">
@@ -323,6 +326,9 @@
       <Filter>file_sys</Filter>
     </ClInclude>
     <ClInclude Include="file_sys\file_sys_ctr.h">
+      <Filter>file_sys</Filter>
+    </ClInclude>
+    <ClInclude Include="file_sys\volume_exefs.h">
       <Filter>file_sys</Filter>
     </ClInclude>
   </ItemGroup>

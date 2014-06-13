@@ -31,6 +31,7 @@ set(SRCS    core.cpp
             file_sys/blob.cpp
             file_sys/file_sys.cpp
             file_sys/file_sys_ctr.cpp
+            file_sys/volume_exefs.cpp
             hle/hle.cpp
             hle/config_mem.cpp
             hle/coprocessor.cpp
@@ -79,6 +80,7 @@ set(HEADERS core.h
             file_sys/file_sys.h
             file_sys/file_sys_ctr.h
             file_sys/volume.h
+            file_sys/volume_exefs.h
             hle/config_mem.h
             hle/coprocessor.h
             hle/hle.h

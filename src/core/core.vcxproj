@@ -166,6 +166,7 @@
     <ClCompile Include="file_sys\blob.cpp" />
     <ClCompile Include="file_sys\file_sys.cpp" />
     <ClCompile Include="file_sys\file_sys_ctr.cpp" />
+    <ClCompile Include="file_sys\volume_exefs.cpp" />
     <ClCompile Include="hle\config_mem.cpp" />
     <ClCompile Include="hle\coprocessor.cpp" />
     <ClCompile Include="hle\hle.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="file_sys\file_sys.h" />
     <ClInclude Include="file_sys\file_sys_ctr.h" />
     <ClInclude Include="file_sys\volume.h" />
+    <ClInclude Include="file_sys\volume_exefs.h" />
     <ClInclude Include="hle\config_mem.h" />
     <ClInclude Include="hle\coprocessor.h" />
     <ClInclude Include="hle\function_wrappers.h" />
