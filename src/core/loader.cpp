@@ -8,7 +8,6 @@
 #include "core/loader.h"
 #include "core/system.h"
 #include "core/core.h"
-#include "core/file_sys/directory_file_system.h"
 #include "core/elf/elf_reader.h"
 #include "core/hle/kernel/kernel.h"
 #include "core/mem_map.h"
@@ -17,21 +16,6 @@
 
 /// Loads an extracted CXI from a directory
 bool LoadDirectory_CXI(std::string &filename) {
-    std::string full_path = filename;
-    std::string path, file, extension;
-    SplitPath(ReplaceAll(full_path, "\\", "/"), &path, &file, &extension);
-#if EMU_PLATFORM == PLATFORM_WINDOWS
-    path = ReplaceAll(path, "/", "\\");
-#endif
-    DirectoryFileSystem *fs = new DirectoryFileSystem(&System::g_ctr_file_system, path);
-    System::g_ctr_file_system.Mount("fs:", fs);
-
-    std::string final_name = "fs:/" + file + extension;
-    File::IOFile f(filename, "rb");
-
-    if (f.IsOpen()) {
-        // TODO(ShizZy): read here to memory....
-    }
     ERROR_LOG(TIME, "Unimplemented function!");
     return true;
 }

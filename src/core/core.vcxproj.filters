@@ -171,6 +171,9 @@
     <ClCompile Include="hle\service\ndm.cpp">
       <Filter>hle\service</Filter>
     </ClCompile>
+    <ClCompile Include="file_sys\blob.cpp">
+      <Filter>file_sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="arm\disassembler\arm_disasm.h">
@@ -306,6 +309,9 @@
     </ClInclude>
     <ClInclude Include="hle\service\ndm.h">
       <Filter>hle\service</Filter>
+    </ClInclude>
+    <ClInclude Include="file_sys\blob.h">
+      <Filter>file_sys</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
