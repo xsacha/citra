@@ -26,21 +26,19 @@ ARM_Interface*  g_sys_core      = nullptr;  ///< ARM11 system (OS) core
 /// Run the core CPU loop
 void RunLoop() {
     for (;;){
-        g_app_core->Run(GPU::kFrameTicks);
+        g_app_core->Run(100);
         HW::Update();
-        Kernel::Reschedule();
+        if (HLE::g_reschedule) {
+            Kernel::Reschedule();
+        }
     }
 }
 
 /// Step the CPU one instruction
 void SingleStep() {
     g_app_core->Step();
-
-    // Update and reschedule after approx. 1 frame
-    u64 current_ticks = Core::g_app_core->GetTicks();
-    if ((current_ticks - g_last_ticks) >= GPU::kFrameTicks || HLE::g_reschedule) {
-        g_last_ticks = current_ticks;
-        HW::Update();
+    HW::Update();
+    if (HLE::g_reschedule) {
         Kernel::Reschedule();
     }
 }
