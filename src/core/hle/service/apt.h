@@ -30,7 +30,7 @@ public:
      * @return Port name of service
      */
     const char *GetPortName() const {
-        return "APT:U";
+        return "PT:A";
     }
 };
 

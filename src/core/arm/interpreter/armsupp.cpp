@@ -854,7 +854,7 @@ ARMul_UndefInstr (ARMul_State * state, ARMword instr)
 	ARM_Disasm disasm = ARM_Disasm();
 	disasm.disasm(state->pc, instr, buff);
 	ERROR_LOG(ARM11, "Undefined instruction!! Disasm: %s Opcode: 0x%x", buff, instr);
-	ARMul_Abort (state, ARMul_UndefinedInstrV);
+	//ARMul_Abort (state, ARMul_UndefinedInstrV);
 }
 
 /* Return TRUE if an interrupt is pending, FALSE otherwise.  */

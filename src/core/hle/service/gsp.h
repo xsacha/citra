@@ -137,7 +137,7 @@ public:
      * @return Port name of service
      */
     const char *GetPortName() const {
-        return "gsp::Gpu";
+        return "p:gspu:G";
     }
 
 };
