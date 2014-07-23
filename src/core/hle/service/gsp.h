@@ -63,22 +63,6 @@ struct InterruptQueue {
 };
 static_assert(sizeof(InterruptQueue) == 0x40, "InterruptQueue struct has incorrect size");
 
-/// GSP shared memory GX command buffer header
-union CmdBufferHeader {
-    u32 hex;
-
-    // Current command index. This index is updated by GSP module after loading the command data,
-    // right before the command is processed. When this index is updated by GSP module, the total
-    // commands field is decreased by one as well.
-    BitField<0,8,u32>   index;
-
-    // Total commands to process, must not be value 0 when GSP module handles commands. This must be
-    // <=15 when writing a command to shared memory. This is incremented by the application when
-    // writing a command to shared memory, after increasing this value TriggerCmdReqQueue is only
-    // used if this field is value 1.
-    BitField<8,8,u32>   number_commands;
-};
-
 /// GSP command
 struct Command {
     BitField<0, 8, CommandId> id;
@@ -116,6 +100,29 @@ struct Command {
     };
 };
 static_assert(sizeof(Command) == 0x20, "Command struct has incorrect size");
+
+/// GSP shared memory GX command buffer header
+struct CommandBuffer {
+    union {
+        u32 hex;
+
+        // Current command index. This index is updated by GSP module after loading the command
+        // data, right before the command is processed. When this index is updated by GSP module,
+        // the total commands field is decreased by one as well.
+        BitField<0,8,u32>   index;
+
+        // Total commands to process, must not be value 0 when GSP module handles commands. This
+        // must be <=15 when writing a command to shared memory. This is incremented by the
+        // application when writing a command to shared memory, after increasing this value
+        // TriggerCmdReqQueue is only used if this field is value 1.
+        BitField<8,8,u32>   number_commands;
+    };
+
+    u32 unk[7];
+
+    Command commands[0xF];
+};
+static_assert(sizeof(CommandBuffer) == 0x200, "CommandBuffer struct has incorrect size");
 
 /// Interface to "srv:" service
 class Interface : public Service::Interface {

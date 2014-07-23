@@ -28,11 +28,11 @@ Handle g_shared_memory = 0;
 
 u32 g_thread_id = 1;
 
-/// Gets a pointer to the start (header) of a command buffer in GSP shared memory
-static inline u8* GetCmdBufferPointer(u32 thread_id, u32 offset=0) {
+/// Gets a pointer to a thread command buffer in GSP shared memory
+static inline u8* GetCommandBuffer(u32 thread_id) {
     if (0 == g_shared_memory) return nullptr;
 
-    return Kernel::GetSharedMemoryPointer(g_shared_memory, 0x800 + (thread_id * 0x200) + offset);
+    return Kernel::GetSharedMemoryPointer(g_shared_memory, 0x800 + (thread_id * sizeof(CommandBuffer)));
 }
 
 /// Gets a pointer to the start (header) of a command buffer in GSP shared memory
@@ -150,19 +150,11 @@ void SignalInterrupt(InterruptId interrupt_id) {
 }
 
 /// Executes the next GSP command
-void ExecuteCommand(u32 thread_id, u32 command_index) {
-
+void ExecuteCommand(const Command& command) {
     // Utility function to convert register ID to address
     auto WriteGPURegister = [](u32 id, u32 data) {
         GPU::Write<u32>(0x1EF00000 + 4 * id, data);
     };
-
-    CmdBufferHeader* header = (CmdBufferHeader*)GetCmdBufferPointer(thread_id);
-    auto& command = *(const Command*)GetCmdBufferPointer(thread_id, (command_index + 1) * 0x20);
-
-    g_debugger.GXCommandProcessed(GetCmdBufferPointer(thread_id, 0x20 + (header->index * 0x20)));
-
-    NOTICE_LOG(GSP, "decoding command 0x%08X", (int)command.id.Value());
 
     switch (command.id) {
 
@@ -246,8 +238,6 @@ void ExecuteCommand(u32 thread_id, u32 command_index) {
     default:
         ERROR_LOG(GSP, "unknown command 0x%08X", (int)command.id.Value());
     }
-
-    header->number_commands = header->number_commands - 1; // Indicates that command has completed
 }
 
 /// This triggers handling of the GX command written to the command buffer in shared memory.
@@ -255,11 +245,17 @@ void TriggerCmdReqQueue(Service::Interface* self) {
 
     // Iterate through each thread's command queue...
     for (u32 thread_id = 0; thread_id < 0x4; ++thread_id) {
-        CmdBufferHeader* header = (CmdBufferHeader*)GetCmdBufferPointer(thread_id);
+        CommandBuffer* command_buffer = (CommandBuffer*)GetCommandBuffer(thread_id);
 
         // Iterate through each command...
-        for (u32 command_index = 0; command_index < header->number_commands; ++command_index) {
-            ExecuteCommand(thread_id, command_index);
+        for (u32 i = 0; i < command_buffer->number_commands; ++i) {
+            g_debugger.GXCommandProcessed((u8*)&command_buffer->commands[i]); // TODO(bunnei): FixMe
+
+            // Decode and execute command
+            ExecuteCommand(command_buffer->commands[i]);
+
+            // Indicates that command has completed
+            command_buffer->number_commands = command_buffer->number_commands - 1;
         }
     }
 }
