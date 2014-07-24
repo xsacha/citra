@@ -224,27 +224,30 @@ u32 MapBlock_HeapGSP(u32 size, u32 operation, u32 permissions) {
 }
 
 u8 Read8(const u32 addr) {
-    u8 _var = 0;
-    Read<u8>(_var, addr);
-    return (u8)_var;
+    u8 data = 0;
+    Read<u8>(data, addr);
+    return (u8)data;
 }
 
 u16 Read16(const u32 addr) {
-    u16_le _var = 0;
-    Read<u16_le>(_var, addr);
-    return (u16)_var;
+    u16_le data = 0;
+    Read<u16_le>(data, addr);
+    return (u16)data;
 }
 
 u32 Read32(const u32 addr) {
-    u32_le _var = 0;
-    Read<u32_le>(_var, addr);
-    return _var;
+    u32_le data = 0;
+    Read<u32_le>(data, addr);
+
+    // Correct for 32-bit unaligned memory reads
+    int shift = (addr & 3) * 8;
+    return ((data << shift) | (data >> (32 - shift)));
 }
 
 u64 Read64(const u32 addr) {
-    u64_le _var = 0;
-    Read<u64_le>(_var, addr);
-    return _var;
+    u64_le data = 0;
+    Read<u64_le>(data, addr);
+    return data;
 }
 
 u32 Read8_ZX(const u32 addr) {
